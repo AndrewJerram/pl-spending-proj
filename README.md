@@ -21,9 +21,14 @@ Premier League wage bills, transfer spend, and league performance, 2010-11 to pr
   - `data/raw/results/1011_E0.csv` in this repo is a small **sample** (a handful of
     matches) just to keep the schema pinned down for development - run
     `fetch_results.py` on a machine with normal internet access to pull full seasons.
-- **Transfer spend / squad market value:** [Transfermarkt](https://www.transfermarkt.com),
-  via the [transfermarkt-datasets](https://github.com/dcaribou/transfermarkt-datasets)
-  project or direct scraping - not yet implemented, see "Next steps" below.
+- **Transfer spend:** per-season CSVs of every Premier League transfer (player,
+  fee, in/out) from [eordo/transfermarkt-data](https://github.com/eordo/transfermarkt-data),
+  itself built on the [transfermarkt-datasets](https://github.com/dcaribou/transfermarkt-datasets)
+  project. `data/raw/transfers/` has the 2010-2025 season files already copied in,
+  and `src/load_transfers.py` turns them into gross spend / gross income / net
+  spend per club per season, in euros. Live scraping wasn't necessary here since
+  this pre-built dataset already covers exactly what's needed - it's re-run
+  weekly upstream if you want to refresh the raw files later.
 - **Wage bills:** no clean free bulk source exists. Plan is to hand-compile a season-
   by-season table from club annual accounts / Companies House filings for the clubs
   and seasons in scope, since this is inherently a manual, source-by-source task.
@@ -37,23 +42,28 @@ data/
   raw/wages/           (empty - hand-compiled wage bill data goes here)
   processed/          cleaned, combined datasets ready for analysis
 src/
-  fetch_results.py     downloads season results CSVs
-  load_results.py      combines seasons, derives final league tables
-notebooks/             exploratory analysis (to be added)
+  fetch_results.py       downloads season results CSVs
+  load_results.py        combines seasons, derives final league tables
+  load_transfers.py      combines transfer CSVs into spend/income/net per club-season
+  build_analysis_table.py joins standings + spend into one analysis-ready table
+notebooks/               exploratory analysis (to be added)
 ```
 
 ## Setup
 ```
 pip install -r requirements.txt
-python src/fetch_results.py   # needs real internet access - see note above
+python src/fetch_results.py         # needs real internet access - see note above
 python src/load_results.py
+python src/load_transfers.py
+python src/build_analysis_table.py
 ```
 
 ## Status
 - [x] Results data pipeline (fetch + combine + derive standings)
-- [ ] Transfer spend data pipeline
+- [x] Transfer spend data pipeline (gross spend / income / net per club-season)
+- [x] Join spend onto standings -> data/processed/analysis_table.csv
 - [ ] Wage bill data (manual compilation)
-- [ ] Join spend/wages onto standings, inflation-adjust to real terms
+- [ ] Inflation-adjust spend to real terms
 - [ ] EDA: scatter plots, correlation by table tier
 - [ ] Linear regression baseline + random forest comparison
 - [ ] Robustness checks (exclude relegated clubs, check for outlier-driven results)
