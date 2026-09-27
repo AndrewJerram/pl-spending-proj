@@ -37,8 +37,8 @@ Premier League wage bills, transfer spend, and league performance, 2010-11 to pr
 ## Project layout
 ```
 data/
-  raw/results/        one CSV per season from football-data.co.uk
-  raw/transfers/       (empty - transfer spend data goes here)
+  raw/results/        one CSV per season from football-data.co.uk (sample only - see note above)
+  raw/transfers/       one CSV per season, 2010-2025, from eordo/transfermarkt-data
   raw/wages/           (empty - hand-compiled wage bill data goes here)
   processed/          cleaned, combined datasets ready for analysis
 src/
