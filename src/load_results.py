@@ -37,6 +37,15 @@ def load_all_seasons() -> pd.DataFrame:
         df = pd.read_csv(path)
         cols_present = [c for c in KEEP_COLS if c in df.columns]
         df = df[cols_present].copy()
+        # football-data.co.uk files occasionally end with a stray row that's
+        # just commas (no real match data) - a trailing blank line with no
+        # commas gets skipped automatically, but one with empty fields doesn't.
+        # Drop any row that isn't a real fixture before it pollutes standings.
+        before = len(df)
+        df = df.dropna(subset=["HomeTeam", "AwayTeam", "FTHG", "FTAG"])
+        dropped = before - len(df)
+        if dropped:
+            print(f"  {path.name}: dropped {dropped} malformed row(s)")
         df["Season"] = season_label(code)
         # Older seasons use dd/mm/yy, newer ones use dd/mm/yyyy - let pandas
         # infer per-file rather than forcing one format across all seasons.
